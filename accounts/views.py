@@ -1,10 +1,11 @@
-from rest_framework import generics
+from rest_framework import generics, permissions
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 
 from .serializers import AuthTokenSerializer, UserSerializer
 
+from .authentication import TokenAuthentication
 from .models import Token
 
 
@@ -26,3 +27,15 @@ class CreateTokenView(ObtainAuthToken):
         user = serializer.validated_data["user"]
         token, created = Token.objects.get_or_create(user=user)
         return Response({"token": token.key})
+
+
+class ManageUserView(generics.RetrieveUpdateAPIView):
+    """Manage the authenticated user"""
+
+    serializer_class = UserSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_object(self):
+        """Retreive and return the authenticated user"""
+        return self.request.user

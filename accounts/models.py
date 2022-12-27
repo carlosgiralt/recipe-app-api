@@ -1,4 +1,4 @@
-from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -17,7 +17,7 @@ class Token(BaseToken):
         unique=True,
     )
     user = models.ForeignKey(
-        get_user_model(),
+        settings.AUTH_USER_MODEL,
         related_name="auth_tokens",
         on_delete=models.CASCADE,
         verbose_name=_("User"),

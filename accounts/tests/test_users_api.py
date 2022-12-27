@@ -8,6 +8,7 @@ from rest_framework import status
 
 CREATE_USER_ACCOUNT_URL = reverse("accounts:create")
 TOKEN_URL = reverse("accounts:token")
+ME_URL = reverse("accounts:me")
 
 
 def create_user_account(**params):
@@ -94,3 +95,62 @@ class PublicAccountsApiTest(TestCase):
         response = self.client.post(TOKEN_URL, {"email": "", "password": ""})
         self.assertNotIn("token", response.data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_retreive_user_unauthorired(self):
+        """Test that authentication is required for users"""
+        response = self.client.get(ME_URL)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class PrivateAccountsApiTest(TestCase):
+    """Test API requests that require authentication"""
+
+    def setUp(self):
+        self.user = create_user_account(
+            email="test@example.com",
+            password="testpassword",
+            first_name="test",
+            last_name="user",
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(self.user)
+
+    def test_retreive_profile_success(self):
+        """Test that the user profile is retreived for logged in user"""
+
+        response = self.client.get(ME_URL)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data,
+            {
+                "first_name": self.user.first_name,
+                "last_name": self.user.last_name,
+                "email": self.user.email,
+            },
+        )
+
+    def test_post_method_over_user_profile_not_allowed(self):
+        """Test that the user profile url does not not allow access using POST"""
+        response = self.client.post(ME_URL, {})
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_405_METHOD_NOT_ALLOWED,
+        )
+
+    def test_update_user_profile(self):
+        """Test updating the user profile for authenticated user"""
+        payload = {
+            "first_name": "John",
+            "last_name": "Doe",
+            "password": "newpassword",
+        }
+
+        response = self.client.patch(ME_URL, payload)
+
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.first_name, payload["first_name"])
+        self.assertEqual(self.user.last_name, payload["last_name"])
+        self.assertTrue(self.user.check_password(payload["password"]))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
