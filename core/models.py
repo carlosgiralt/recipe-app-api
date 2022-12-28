@@ -1,5 +1,6 @@
 import typing as t
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import (
     AbstractUser,
     UserManager as BaseUserManager,
@@ -58,3 +59,17 @@ class User(AbstractUser):
     @property
     def username(self) -> str:
         return self.email
+
+
+class Tag(models.Model):
+    """Tag to be used for a recipe"""
+
+    name = models.CharField(_("name"), max_length=255)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="tags",
+        on_delete=models.CASCADE,
+    )
+
+    def __str__(self) -> str:
+        return self.name
