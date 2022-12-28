@@ -20,4 +20,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     # API endpoints
     path("api/accounts/", include("accounts.urls")),
+    path("api/recipe/", include("recipe.urls")),
 ]
