@@ -26,6 +26,7 @@ services:
     ports:
       - "8000:8000"
     environment:
+      - SECRET_KEY=supersecretkey
       - DB_HOST=db
       - DB_PORT=5432
       - DB_NAME=app
