@@ -96,7 +96,7 @@ class PublicAccountsApiTest(TestCase):
         self.assertNotIn("token", response.data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_retreive_user_unauthorired(self):
+    def test_retrieve_user_unauthorired(self):
         """Test that authentication is required for users"""
         response = self.client.get(ME_URL)
 
@@ -116,8 +116,8 @@ class PrivateAccountsApiTest(TestCase):
         self.client = APIClient()
         self.client.force_authenticate(self.user)
 
-    def test_retreive_profile_success(self):
-        """Test that the user profile is retreived for logged in user"""
+    def test_retrieve_profile_success(self):
+        """Test that the user profile is retrieved for logged in user"""
 
         response = self.client.get(ME_URL)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

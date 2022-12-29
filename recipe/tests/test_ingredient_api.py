@@ -26,7 +26,7 @@ class PublicIngredientsApiTest(TestCase):
 
 
 class PrivateIngredientsApiTest(TestCase):
-    """ "Test ingredients can be retreived by the logged in user"""
+    """Test ingredients can be retrieved by the logged in user"""
 
     def setUp(self):
         self.client = APIClient()
@@ -36,8 +36,8 @@ class PrivateIngredientsApiTest(TestCase):
         )
         self.client.force_authenticate(self.user)
 
-    def test_retreive_ingredient_list(self):
-        """Test that ingredients can be retreived"""
+    def test_retrieve_ingredient_list(self):
+        """Test that ingredients can be retrieved"""
         Ingredient.objects.create(name="Oil", user=self.user)
         Ingredient.objects.create(name="Onion", user=self.user)
 
