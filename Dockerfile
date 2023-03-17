@@ -21,5 +21,15 @@ RUN apk del .tmp-build-deps
 
 COPY . /app
 
+# Create media and static folders
+RUN mkdir -p /vol/web/media
+RUN mkdir -p /vol/web/static
+
+# Create the `runner` user
 RUN adduser -D runner
+
+# Add permissions over directories
+RUN chown -R runner:runner /vol/
+RUN chmod -R 755 /vol/web
+
 USER runner
